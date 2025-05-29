@@ -1,0 +1,8 @@
+{
+  "name": "Basic Sync",
+  "short_name": "Sync",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "icons": []
+}

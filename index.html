@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Basic Background Sync</title>
+</head>
+<body>
+  <h1>Background Sync Example</h1>
+  <button onclick="registerSync()">Register Sync</button>
+  <p id="log">Waiting...</p>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        console.log('Service Worker registered');
+      });
+    }
+
+    // This function registers a background sync event
+    function registerSync() {
+      if ('serviceWorker' in navigator && 'SyncManager' in window) {
+        navigator.serviceWorker.ready.then(reg => {
+          // Register a sync task with a custom tag name
+          return reg.sync.register('mySyncTag');
+        }).then(() => {
+          document.getElementById("log").textContent = "Sync registered!";
+        }).catch(err => {
+          console.error("Sync registration failed:", err);
+        });
+      } else {
+        console.warn("Background Sync not supported");
+      }
+    }
+
+    // Listen for messages sent from the Service Worker
+    navigator.serviceWorker.addEventListener('message', event => {
+      // Display the message received from Service Worker in the page
+      document.getElementById("log").textContent = event.data;
+    });
+  </script>
+</body>
+</html>
