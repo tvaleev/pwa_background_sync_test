@@ -1,33 +1,20 @@
-// Called when the Service Worker is installed
-self.addEventListener('install', () => {
-  // Skip waiting so the new SW activates immediately
+self.addEventListener('install', event => {
   self.skipWaiting();
+  console.log('[SW] Installed');
 });
 
-// Called when the Service Worker is activated
-self.addEventListener('activate', () => {
-  // Claim control of all clients immediately
-  self.clients.claim();
+self.addEventListener('activate', event => {
+  console.log('[SW] Activated');
 });
 
-// Listen for 'sync' events registered from the page
 self.addEventListener('sync', event => {
-  // Check for a specific tag name (set from the page)
-  if (event.tag === 'mySyncTag') {
-    // Wait until the background task completes
-    event.waitUntil(doBackgroundTask());
+  if (event.tag === 'test-sync') {
+    console.log('[SW] Sync event triggered');
+    event.waitUntil(
+      self.registration.showNotification('✅ Background Sync Fired!', {
+        body: 'Sync completed successfully!',
+        icon: 'icon-512.png'
+      })
+    );
   }
 });
-
-// Simulated background task
-async function doBackgroundTask() {
-  console.log('Background sync triggered!');
-
-  // Get all clients (open tabs/pages controlled by this SW)
-  const clientsList = await self.clients.matchAll();
-
-  // Send a message to each client
-  for (const client of clientsList) {
-    client.postMessage("Background Sync completed!");
-  }
-}
