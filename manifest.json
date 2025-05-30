@@ -1,7 +1,7 @@
 {
   "name": "Basic Sync",
   "short_name": "Sync",
-  "start_url": ".",
+  "start_url": "https://tvaleev.github.io/pwa_background_sync_test",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#4285F4",

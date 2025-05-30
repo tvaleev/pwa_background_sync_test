@@ -1,0 +1,26 @@
+actor User
+participant PWA
+participant Browser
+participant OS
+
+== App Setup & Sync Registration ==
+
+User -> PWA : Opens installed PWA
+PWA -> Browser : Registers service worker (sw.js)
+Browser -> OS : Keeps service worker in memory
+PWA -> Browser : Requests Notification permission
+User -> PWA : Clicks "Register Sync" button
+PWA -> Browser : Calls reg.sync.register("test-sync")
+
+== App is Killed ==
+
+User -> OS : Kills PWA (swipe away from task list)
+OS -> Browser : Removes web app from memory\n(Service Worker stays registered)
+
+== Network Comes Back Online ==
+
+User -> OS : Enables network (Wi-Fi or data)
+OS -> Browser : Detects online state and run headless browser
+Browser -> Browser : Triggers "sync" event with tag "test-sync"
+Browser -> PWA : Runs sw.js (in background)
+PWA -> Browser : Shows notification "✅ Background Sync Fired!"
