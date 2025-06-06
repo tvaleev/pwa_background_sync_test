@@ -11,6 +11,16 @@
   <h1>Background Sync Test</h1>
   <button id="registerSync">Register Sync</button>
   <p id="status">Status: <span id="state">unknown</span></p>
+  <div id="test-steps">
+    <h3>Test Scenario:</h3>
+    <div class="step" id="step1">1. Install PWA (Add to Home Screen)</div>
+    <div class="step" id="step2">2. Open app, wait until service worker is ready</div>
+    <div class="step" id="step3">3. Disable network (toggle WiFi off)</div>
+    <div class="step" id="step4">4. Tap button below to register sync</div>
+    <div class="step" id="step5">5. Move app to background and kill it</div>
+    <div class="step" id="step6">6. Enable network (toggle WiFi on)</div>
+    <div class="step" id="step7">7. Wait for sync (check notifications)</div>
+  </div>
 
   <script>
     // Check support
@@ -20,7 +30,7 @@
 
         document.getElementById('registerSync').addEventListener('click', async () => {
           try {
-            await Notification.requestPermission();
+            //await Notification.requestPermission();
             await reg.sync.register('test-sync');
             console.log('Background sync registered');
           } catch (err) {
