@@ -6,11 +6,24 @@
   <title>Background Sync Demo</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#4285F4" />
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 2em;
+    }
+    .step {
+      margin: 0.5em 0;
+    }
+    #state {
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <h1>Background Sync Test</h1>
   <button id="registerSync">Register Sync</button>
   <p id="status">Status: <span id="state">unknown</span></p>
+
   <div id="test-steps">
     <h3>Test Scenario:</h3>
     <div class="step" id="step1">1. Install PWA (Add to Home Screen)</div>
@@ -19,11 +32,19 @@
     <div class="step" id="step4">4. Tap button below to register sync</div>
     <div class="step" id="step5">5. Move app to background and kill it</div>
     <div class="step" id="step6">6. Enable network (toggle WiFi on)</div>
-    <div class="step" id="step7">7. Wait for sync (check notifications)</div>
+    <div class="step" id="step7">7. Wait for sync (check notifications or status)</div>
   </div>
 
   <script>
-    // Check support
+    // Connectivity indicator
+    function updateStatus(text = null) {
+      document.getElementById('state').textContent = text || (navigator.onLine ? 'Online' : 'Offline');
+    }
+    window.addEventListener('online', () => updateStatus());
+    window.addEventListener('offline', () => updateStatus());
+    updateStatus();
+
+    // Register service worker and sync event
     if ('serviceWorker' in navigator && 'SyncManager' in window) {
       navigator.serviceWorker.register('sw.js').then(reg => {
         console.log('Service Worker registered.');
@@ -33,22 +54,24 @@
             //await Notification.requestPermission();
             await reg.sync.register('test-sync');
             console.log('Background sync registered');
+            updateStatus('Sync registered (while offline)');
           } catch (err) {
             console.error('Sync registration failed:', err);
+            updateStatus('Sync registration failed');
+          }
+        });
+
+        // Listen for messages from the service worker
+        navigator.serviceWorker.addEventListener('message', event => {
+          if (event.data && event.data.type === 'sync-event') {
+            updateStatus(event.data.message);
           }
         });
       });
     } else {
       console.warn('Background sync not supported in this browser.');
+      updateStatus('Background sync not supported');
     }
-
-    // Connectivity indicator
-    function updateStatus() {
-      document.getElementById('state').textContent = navigator.onLine ? 'Online' : 'Offline';
-    }
-    window.addEventListener('online', updateStatus);
-    window.addEventListener('offline', updateStatus);
-    updateStatus();
   </script>
 </body>
 </html>
